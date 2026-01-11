@@ -1,0 +1,285 @@
+import React, { useState, useEffect } from 'react';
+import { BookOpen, ShieldCheck, Cloud, CreditCard, Trophy, Map, Info, Loader } from 'lucide-react';
+import ConceptMap from './ConceptMap';
+import Footer from './Footer';
+
+const Menu = ({ startQuiz, lastPerformance }) => {
+  const [activeTab, setActiveTab] = useState('tests');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(false);
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
+  const handleTabChange = (tab) => {
+    if (tab === activeTab) {
+      window.scrollTo(0, 0);
+    } else {
+      setIsLoading(true);
+      setActiveTab(tab);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+          <Loader className="w-12 h-12 text-orange-500 animate-spin" />
+        </div>
+      )}
+
+      <div className="flex-1 p-6 md:p-12 font-sans text-slate-900">
+        {/* Hero Section */}
+        <header className="max-w-6xl mx-auto mb-12">
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-4">
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-4 rounded-2xl shadow-lg">
+                <Cloud className="text-white w-12 h-12" />
+              </div>
+            </div>
+            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600">
+              AWS Certified Cloud Practitioner
+            </h1>
+            <p className="text-xl text-slate-600 mb-8">Master the fundamentals with our comprehensive practice exam simulator</p>
+            
+            {/* Tab Navigation */}
+            <div className="flex gap-2 justify-center mb-8 flex-wrap">
+              <button
+                onClick={() => handleTabChange('tests')}
+                className={`px-6 py-3 rounded-full font-bold transition-all ${
+                  activeTab === 'tests'
+                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                }`}
+              >
+                <Trophy className="w-5 h-5 inline-block mr-2" />
+                Practice Tests
+              </button>
+              <button
+                onClick={() => handleTabChange('concepts')}
+                className={`px-6 py-3 rounded-full font-bold transition-all ${
+                  activeTab === 'concepts'
+                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                }`}
+              >
+                <Map className="w-5 h-5 inline-block mr-2" />
+                Concept Map
+              </button>
+              <button
+                onClick={() => handleTabChange('about')}
+                className={`px-6 py-3 rounded-full font-bold transition-all ${
+                  activeTab === 'about'
+                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                }`}
+              >
+                <Info className="w-5 h-5 inline-block mr-2" />
+                About
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Tab Content */}
+        <main className="max-w-6xl mx-auto">
+          {/* Tests Tab */}
+          {activeTab === 'tests' && (
+            <div className="space-y-8">
+              {/* Domain Tests */}
+              <div>
+                <h2 className="text-3xl font-bold text-slate-900 mb-6">Domain Mastery Tests</h2>
+                <p className="text-slate-600 mb-8">Focus on specific domains with targeted 30-question quizzes</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {[
+            { id: 1, title: 'Domain 1: Cloud Concepts', icon: <BookOpen />, color: 'bg-blue-500', weight: '24%' },
+            { id: 2, title: 'Domain 2: Security and Compliance', icon: <ShieldCheck />, color: 'bg-red-500', weight: '30%' },
+            { id: 3, title: 'Domain 3: Cloud Technology and Services', icon: <Cloud />, color: 'bg-green-500', weight: '34%' },
+            { id: 4, title: 'Domain 4: Billing, Pricing, and Support', icon: <CreditCard />, color: 'bg-purple-500', weight: '12%' },
+          ].map(d => (
+            <button 
+              key={d.id}
+              onClick={() => startQuiz('domain', d.id)}
+              className="flex items-center p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-300 hover:scale-105 transition-all group text-left"
+            >
+              <div className={`${d.color} text-white p-4 rounded-xl mr-5 group-hover:scale-110 transition-transform flex-shrink-0`}>
+                {d.icon}
+              </div>
+              <div>
+                <h3 className="font-bold text-lg leading-tight">{d.title}</h3>
+                <p className="text-sm text-slate-400 mt-1">Weight: {d.weight} • 30 Questions</p>
+              </div>
+            </button>
+          ))}
+                </div>
+
+                {/* Full Exam Simulation */}
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 text-white shadow-2xl border border-slate-700">
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <div className="bg-orange-500 w-fit p-3 rounded-xl mb-4">
+                        <Trophy className="w-7 h-7" />
+                      </div>
+                      <h2 className="text-3xl font-bold mb-2">Full Exam Simulation</h2>
+                      <p className="text-slate-300">Experience the real exam with all domains combined</p>
+                    </div>
+                  </div>
+                  
+                  <ul className="space-y-3 text-slate-300 text-sm mb-8">
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
+                      <span>65 randomized questions from all domains</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
+                      <span>90 minutes to complete (realistic exam time)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
+                      <span>Official domain distribution (16, 20, 21, 8 questions)</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
+                      <span>15 unscored questions included</span>
+                    </li>
+                  </ul>
+                  <button 
+                    onClick={() => startQuiz('full')}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 rounded-xl font-bold text-lg transition-all shadow-lg shadow-orange-900/20 hover:shadow-xl"
+                  >
+                    Start full exam simulation
+                  </button>
+                </div>
+
+                {/* Last Performance */}
+                {lastPerformance && (
+                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="font-bold text-2xl mb-6">Last Performance</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[1,2,3,4].map(dom => {
+                        const pct = lastPerformance[dom];
+                        const isGood = pct >= 70;
+                        return (
+                          <div key={dom} className={`p-4 rounded-xl text-center ${isGood ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+                            <p className={`text-sm font-bold mb-2 ${isGood ? 'text-emerald-700' : 'text-red-700'}`}>Domain {dom}</p>
+                            <p className={`text-2xl font-bold ${isGood ? 'text-emerald-600' : 'text-red-600'}`}>{pct}%</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Concepts Tab */}
+          {activeTab === 'concepts' && (
+            <ConceptMap />
+          )}
+
+          {/* About Tab */}
+          {activeTab === 'about' && (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <div className="bg-blue-500 p-2 rounded-lg">
+                        <BookOpen className="w-6 h-6 text-white" />
+                      </div>
+                      About This Tool
+                    </h3>
+                    <p className="text-slate-600 mb-4">
+                      This AWS Cloud Practitioner practice exam simulator is designed to help you prepare for the official AWS certification exam.
+                    </p>
+                    <p className="text-slate-600 mb-4">
+                      It provides realistic exam conditions with questions organized by the four official exam domains, allowing you to study specific topics or take full-length practice exams.
+                    </p>
+                    <p className="text-slate-600">
+                      The tool includes immediate feedback in domain mastery mode and a comprehensive performance breakdown after each exam.
+                    </p>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <div className="bg-orange-500 p-2 rounded-lg">
+                        <Trophy className="w-6 h-6 text-white" />
+                      </div>
+                      How to Use
+                    </h3>
+                    <ul className="space-y-3 text-slate-600">
+                      <li className="flex gap-3">
+                        <span className="font-bold text-orange-500 flex-shrink-0">1.</span>
+                        <span>Choose a domain to focus on specific topics or take the full exam simulation</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-orange-500 flex-shrink-0">2.</span>
+                        <span>Answer questions and manage your time (90 minutes for full exam)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-orange-500 flex-shrink-0">3.</span>
+                        <span>Review your answers before finishing (in exam mode)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-orange-500 flex-shrink-0">4.</span>
+                        <span>Check your score and domain-by-domain performance breakdown</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <div className="bg-green-500 p-2 rounded-lg">
+                        <Cloud className="w-6 h-6 text-white" />
+                      </div>
+                      Study Tips
+                    </h3>
+                    <ul className="space-y-3 text-slate-600">
+                      <li className="flex gap-3">
+                        <span className="font-bold text-green-500 flex-shrink-0">✓</span>
+                        <span>Start with individual domain tests to understand weak areas</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-green-500 flex-shrink-0">✓</span>
+                        <span>Review the concept map to understand domain relationships</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-green-500 flex-shrink-0">✓</span>
+                        <span>Take multiple full exams until you consistently score 70%+</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-green-500 flex-shrink-0">✓</span>
+                        <span>AWS recommends 80% as a safe score before exam day</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 p-8 rounded-2xl text-white shadow-lg">
+                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                      <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+                        <Info className="w-6 h-6 text-white" />
+                      </div>
+                      Important
+                    </h3>
+                    <p className="mb-4">
+                      This tool is designed for study purposes. Make sure you're familiar with the official AWS documentation and exam guides before taking the actual exam.
+                    </p>
+                    <p>
+                      AWS recommends consistently scoring at least 80% in practice tests before attempting the official certification exam.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+        </main>
+      </div>
+
+      {/* Footer */}
+      <Footer onTabChange={handleTabChange} />
+    </div>
+  );
+};
+
+export default Menu;
