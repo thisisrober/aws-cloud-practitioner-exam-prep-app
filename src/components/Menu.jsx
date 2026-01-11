@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, ShieldCheck, Cloud, CreditCard, Trophy, Map, Info, Loader } from 'lucide-react';
+import React, { useState, useEffect, useContext } from 'react';
+import { BookOpen, ShieldCheck, Cloud, CreditCard, Trophy, Map, Info, Loader, Moon, Sun } from 'lucide-react';
 import ConceptMap from './ConceptMap';
 import Footer from './Footer';
+import { ThemeContext } from '../context/ThemeContext';
 
 const Menu = ({ startQuiz, lastPerformance }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [isLoading, setIsLoading] = useState(false);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
   useEffect(() => {
     setIsLoading(false);
@@ -22,15 +24,15 @@ const Menu = ({ startQuiz, lastPerformance }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
+    <div className={`min-h-screen flex flex-col ${isDarkMode ? 'bg-slate-900' : 'bg-gradient-to-br from-slate-50 to-slate-100'}`}>
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+        <div className={`fixed inset-0 ${isDarkMode ? 'bg-slate-900 bg-opacity-75' : 'bg-white bg-opacity-75'} flex items-center justify-center z-50`}>
           <Loader className="w-12 h-12 text-orange-500 animate-spin" />
         </div>
       )}
 
-      <div className="flex-1 p-6 md:p-12 font-sans text-slate-900">
+      <div className="flex-1 p-6 md:p-12 font-sans">
         {/* Hero Section */}
         <header className="max-w-6xl mx-auto mb-12">
           <div className="text-center mb-12">
@@ -39,10 +41,13 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                 <Cloud className="text-white w-12 h-12" />
               </div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600">
+            <h1 className={`text-5xl md:text-6xl font-extrabold tracking-tight mb-2 ${isDarkMode ? 'text-white' : 'bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600'}`}>
               AWS Certified Cloud Practitioner
             </h1>
-            <p className="text-xl text-slate-600 mb-8">Master the fundamentals with our comprehensive practice exam simulator</p>
+            <p className={`text-2xl font-bold mb-8 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              Exam prep application by thisisrober
+            </p>
+            <p className={`text-xl ${isDarkMode ? 'text-slate-400' : 'text-slate-600'} mb-8`}>Master the fundamentals with our comprehensive practice exam simulator</p>
             
             {/* Tab Navigation */}
             <div className="flex gap-2 justify-center mb-8 flex-wrap">
@@ -51,7 +56,7 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                 className={`px-6 py-3 rounded-full font-bold transition-all ${
                   activeTab === 'tests'
                     ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                    : isDarkMode ? 'bg-slate-700 text-slate-100 border border-slate-600 hover:border-slate-500' : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
                 }`}
               >
                 <Trophy className="w-5 h-5 inline-block mr-2" />
@@ -62,7 +67,7 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                 className={`px-6 py-3 rounded-full font-bold transition-all ${
                   activeTab === 'concepts'
                     ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                    : isDarkMode ? 'bg-slate-700 text-slate-100 border border-slate-600 hover:border-slate-500' : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
                 }`}
               >
                 <Map className="w-5 h-5 inline-block mr-2" />
@@ -73,11 +78,23 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                 className={`px-6 py-3 rounded-full font-bold transition-all ${
                   activeTab === 'about'
                     ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
+                    : isDarkMode ? 'bg-slate-700 text-slate-100 border border-slate-600 hover:border-slate-500' : 'bg-white text-slate-700 border border-slate-200 hover:border-orange-300'
                 }`}
               >
                 <Info className="w-5 h-5 inline-block mr-2" />
                 About
+              </button>
+              <div className="w-[1px] mx-2" />
+              <button
+                onClick={() => toggleTheme()}
+                className={`px-6 py-3 rounded-full font-bold transition-all ${
+                  isDarkMode
+                    ? 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                }`}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
             </div>
           </div>
@@ -90,8 +107,8 @@ const Menu = ({ startQuiz, lastPerformance }) => {
             <div className="space-y-8">
               {/* Domain Tests */}
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 mb-6">Domain Mastery Tests</h2>
-                <p className="text-slate-600 mb-8">Focus on specific domains with targeted 30-question quizzes</p>
+                <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Domain Mastery Tests</h2>
+                <p className={`mb-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Focus on specific domains with targeted 30-question quizzes</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           {[
             { id: 1, title: 'Domain 1: Cloud Concepts', icon: <BookOpen />, color: 'bg-blue-500', weight: '24%' },
@@ -102,14 +119,14 @@ const Menu = ({ startQuiz, lastPerformance }) => {
             <button 
               key={d.id}
               onClick={() => startQuiz('domain', d.id)}
-              className="flex items-center p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-300 hover:scale-105 transition-all group text-left"
+              className={`flex items-center p-6 rounded-2xl border shadow-sm hover:shadow-xl hover:border-orange-300 hover:scale-105 transition-all group text-left ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}
             >
               <div className={`${d.color} text-white p-4 rounded-xl mr-5 group-hover:scale-110 transition-transform flex-shrink-0`}>
                 {d.icon}
               </div>
               <div>
-                <h3 className="font-bold text-lg leading-tight">{d.title}</h3>
-                <p className="text-sm text-slate-400 mt-1">Weight: {d.weight} • 30 Questions</p>
+                <h3 className={`font-bold text-lg leading-tight ${isDarkMode ? 'text-white' : ''}`}>{d.title}</h3>
+                <p className={`text-sm mt-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>Weight: {d.weight} • 30 Questions</p>
               </div>
             </button>
           ))}
@@ -155,16 +172,16 @@ const Menu = ({ startQuiz, lastPerformance }) => {
 
                 {/* Last Performance */}
                 {lastPerformance && (
-                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 className="font-bold text-2xl mb-6">Last Performance</h3>
+                  <div className={`p-8 rounded-2xl border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                    <h3 className={`font-bold text-2xl mb-6 ${isDarkMode ? 'text-white' : ''}`}>Last Performance</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {[1,2,3,4].map(dom => {
                         const pct = lastPerformance[dom];
                         const isGood = pct >= 70;
                         return (
-                          <div key={dom} className={`p-4 rounded-xl text-center ${isGood ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
-                            <p className={`text-sm font-bold mb-2 ${isGood ? 'text-emerald-700' : 'text-red-700'}`}>Domain {dom}</p>
-                            <p className={`text-2xl font-bold ${isGood ? 'text-emerald-600' : 'text-red-600'}`}>{pct}%</p>
+                          <div key={dom} className={`p-4 rounded-xl text-center border ${isGood ? isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-emerald-50 border-emerald-200' : isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-red-50 border-red-200'}`}>
+                            <p className={`text-sm font-bold mb-2 ${isGood ? isDarkMode ? 'text-emerald-400' : 'text-emerald-700' : isDarkMode ? 'text-red-400' : 'text-red-700'}`}>Domain {dom}</p>
+                            <p className={`text-2xl font-bold ${isGood ? isDarkMode ? 'text-emerald-400' : 'text-emerald-600' : isDarkMode ? 'text-red-400' : 'text-red-600'}`}>{pct}%</p>
                           </div>
                         );
                       })}
@@ -184,32 +201,32 @@ const Menu = ({ startQuiz, lastPerformance }) => {
           {activeTab === 'about' && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <div className={`p-8 rounded-2xl border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                    <h3 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : ''}`}>
                       <div className="bg-blue-500 p-2 rounded-lg">
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
                       About This Tool
                     </h3>
-                    <p className="text-slate-600 mb-4">
+                    <p className={`mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                       This AWS Cloud Practitioner practice exam simulator is designed to help you prepare for the official AWS certification exam.
                     </p>
-                    <p className="text-slate-600 mb-4">
+                    <p className={`mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                       It provides realistic exam conditions with questions organized by the four official exam domains, allowing you to study specific topics or take full-length practice exams.
                     </p>
-                    <p className="text-slate-600">
+                    <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>
                       The tool includes immediate feedback in domain mastery mode and a comprehensive performance breakdown after each exam.
                     </p>
                   </div>
 
-                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <div className={`p-8 rounded-2xl border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                    <h3 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : ''}`}>
                       <div className="bg-orange-500 p-2 rounded-lg">
                         <Trophy className="w-6 h-6 text-white" />
                       </div>
                       How to Use
                     </h3>
-                    <ul className="space-y-3 text-slate-600">
+                    <ul className={`space-y-3 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                       <li className="flex gap-3">
                         <span className="font-bold text-orange-500 flex-shrink-0">1.</span>
                         <span>Choose a domain to focus on specific topics or take the full exam simulation</span>
@@ -229,14 +246,14 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                     </ul>
                   </div>
 
-                  <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <div className={`p-8 rounded-2xl border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                    <h3 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : ''}`}>
                       <div className="bg-green-500 p-2 rounded-lg">
                         <Cloud className="w-6 h-6 text-white" />
                       </div>
                       Study Tips
                     </h3>
-                    <ul className="space-y-3 text-slate-600">
+                    <ul className={`space-y-3 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                       <li className="flex gap-3">
                         <span className="font-bold text-green-500 flex-shrink-0">✓</span>
                         <span>Start with individual domain tests to understand weak areas</span>

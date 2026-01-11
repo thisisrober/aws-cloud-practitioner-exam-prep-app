@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { ThemeContext } from '../context/ThemeContext';
 
 const Sidebar = ({
   currentQ,
@@ -24,6 +25,8 @@ const Sidebar = ({
   quizFinished,
   notes
 }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+
   if (!currentQ) return null;
 
   const [tempAns, setTempAns] = useState(userAns || []);
@@ -52,7 +55,7 @@ const Sidebar = ({
   })();
 
   const Feedback = ({ isUserCorrect, currentQ }) => (
-    <div className={`p-4 rounded-2xl mb-6 ${isUserCorrect ? 'bg-emerald-50 border border-emerald-100 text-emerald-800' : 'bg-red-50 border border-red-100 text-red-800'}`}>
+    <div className={`p-4 rounded-2xl mb-6 ${isUserCorrect ? isDarkMode ? 'bg-slate-700 border border-slate-600 text-emerald-400' : 'bg-emerald-50 border border-emerald-100 text-emerald-800' : isDarkMode ? 'bg-slate-700 border border-slate-600 text-red-400' : 'bg-red-50 border border-red-100 text-red-800'}`}>
       <div className="flex items-start gap-3">
         <div>
           <p className="font-bold mb-1">{isUserCorrect ? 'Correct!' : 'Incorrect'}</p>
@@ -75,12 +78,12 @@ const Sidebar = ({
                     const ans = userAnswers[idx] || [];
                     const hasAnswer = ans && ans.length > 0;
                     return (
-                      <div key={idx} className={`p-3 rounded-lg border ${hasAnswer ? 'bg-white' : 'bg-slate-50'} flex items-center justify-between`}>
+                      <div key={idx} className={`p-3 rounded-lg border ${hasAnswer ? isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white' : isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50'} flex items-center justify-between`}>
                         <div className="flex items-center gap-3">
-                          <button onClick={() => { setCurrentIndex(idx); setShowFeedback(false); }} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold">{idx+1}</button>
+                          <button onClick={() => { setCurrentIndex(idx); setShowFeedback(false); }} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${isDarkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100'}`}>{idx+1}</button>
                           <div>
                             <div className="text-sm font-medium">Question {idx + 1}</div>
-                            <div className="text-xs text-slate-400">{hasAnswer ? 'Answered' : 'Unanswered'}</div>
+                            <div className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>{hasAnswer ? 'Answered' : 'Unanswered'}</div>
                           </div>
                         </div>
                         <div>
@@ -99,7 +102,7 @@ const Sidebar = ({
                 </div>
 
                 <div className="mt-4 flex gap-3">
-                  <button onClick={() => { setReviewOpen(false); setReviewAcknowledged(false); }} className="flex-1 py-2 bg-slate-100 rounded-lg">Cancel</button>
+                  <button onClick={() => { setReviewOpen(false); setReviewAcknowledged(false); }} className={`flex-1 py-2 rounded-lg ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-slate-100'}`}>Cancel</button>
                   <button onClick={() => { if (reviewAcknowledged) finalizeFinish(); }} disabled={!reviewAcknowledged} className="flex-1 py-2 bg-emerald-500 text-white rounded-lg disabled:opacity-50">Confirm Finish</button>
                 </div>
               </div>
@@ -109,7 +112,7 @@ const Sidebar = ({
             {currentQ.options.map((opt, idx) => {
               const isSelected = showFeedback ? userAns.includes(idx) : tempAns.includes(idx);
               const isCorrect = currentQ.correct.includes(idx);
-              let stateStyle = "bg-white border-slate-200 text-slate-700 hover:border-orange-300";
+              let stateStyle = isDarkMode ? "bg-slate-800 border-slate-700 text-slate-200 hover:border-orange-500" : "bg-white border-slate-200 text-slate-700 hover:border-orange-300";
 
               const isExcluded = tempExcluded.includes(idx);
 
@@ -152,7 +155,11 @@ const Sidebar = ({
                   aria-disabled={disabled || maxSelectionsReached}
                   className={`w-full flex items-center p-5 rounded-2xl border transition-all text-left shadow-sm ${stateStyle} ${disabled || maxSelectionsReached ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm mr-4 flex-shrink-0 ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm mr-4 flex-shrink-0 ${
+                    quizConfig?.immediateFeedback && showFeedback
+                      ? isCorrect ? isDarkMode ? 'bg-emerald-500 text-white' : 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+                      : isSelected ? 'bg-orange-500 text-white' : isDarkMode ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500'
+                  }`}>
                     {String.fromCharCode(65 + idx)}
                   </div>
                   <span className="font-medium">{opt}</span>
@@ -199,7 +206,7 @@ const Sidebar = ({
           </div>
           </div>
 
-          <div className="mt-auto pt-8 border-t border-slate-200">
+          <div className={`mt-auto pt-8 border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}>
             <div className="flex gap-4 mb-8">
               {(() => {
                 // find previous unanswered index (closest earlier index with no answer)
@@ -220,14 +227,14 @@ const Sidebar = ({
                     <button
                       disabled={prevDisabled}
                       onClick={() => { if (!prevDisabled) { setCurrentIndex(prevUnanswered); setShowFeedback(false); } }}
-                      className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-white border border-slate-200 rounded-xl font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-all"
+                      className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold disabled:opacity-50 transition-all ${isDarkMode ? 'bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}
                     >
                       <ChevronLeft className="w-5 h-5" /> Previous
                     </button>
                     <button
                       disabled={nextDisabled}
                       onClick={() => { if (!nextDisabled) { setCurrentIndex(currentIndex + 1); setShowFeedback(false); } }}
-                      className="flex-1 flex items-center justify-center gap-2 py-4 px-6 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 disabled:opacity-50 transition-all"
+                      className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold disabled:opacity-50 transition-all ${isDarkMode ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                     >
                       Next <ChevronRight className="w-5 h-5" />
                     </button>
@@ -248,12 +255,12 @@ const Sidebar = ({
 
                 const baseStyle = `${currentIndex === idx ? 'ring-2 ring-orange-500 border-orange-500' : 'border-transparent'}`;
                 const statusStyle = flags[idx]
-                  ? 'bg-orange-100 text-orange-600 border-orange-200'
+                  ? isDarkMode ? 'bg-slate-700 text-orange-400 border-slate-600' : 'bg-orange-100 text-orange-600 border-orange-200'
                   : isCorrect
-                    ? 'bg-emerald-100 text-emerald-600 border-emerald-200'
+                    ? isDarkMode ? 'bg-slate-700 text-emerald-400 border-slate-600' : 'bg-emerald-100 text-emerald-600 border-emerald-200'
                     : isIncorrect
-                      ? 'bg-red-100 text-red-600 border-red-200'
-                      : 'bg-white text-slate-400 border-slate-200';
+                      ? isDarkMode ? 'bg-slate-700 text-red-400 border-slate-600' : 'bg-red-100 text-red-600 border-red-200'
+                      : isDarkMode ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-white text-slate-400 border-slate-200';
 
                 return (
                   <div key={idx} className="relative">
@@ -278,7 +285,7 @@ const Sidebar = ({
         </>
       ) : (
         <div className="h-full flex flex-col justify-center">
-           <h3 className="font-bold text-slate-500 uppercase tracking-widest text-xs mb-6">Performance breakdown</h3>
+           <h3 className={`font-bold uppercase tracking-widest text-xs mb-6 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Performance breakdown</h3>
            <div className="space-y-4">
               {[1, 2, 3, 4].map(dom => {
                 const domQs = questions.filter(q => q.domain === dom);
@@ -290,12 +297,12 @@ const Sidebar = ({
                 const pct = Math.round((correctInDom / domQs.length) * 100) || 0;
 
                 return (
-                  <div key={dom} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                  <div key={dom} className={`p-4 rounded-xl border shadow-sm ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
                     <div className="flex justify-between items-end mb-2">
-                      <span className="text-sm font-bold text-slate-700">Domain {dom}</span>
-                      <span className="text-xs font-bold text-slate-400">{pct}%</span>
+                      <span className={`text-sm font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>Domain {dom}</span>
+                      <span className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>{pct}%</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
                       <div 
                         className={`h-full transition-all duration-1000 ${pct >= 70 ? 'bg-emerald-500' : 'bg-red-500'}`} 
                         style={{ width: `${pct}%` }} 
@@ -305,11 +312,11 @@ const Sidebar = ({
                 )
               })}
            </div>
-           <div className="mt-12 p-6 bg-blue-50 border border-blue-100 rounded-2xl">
-             <h4 className="font-bold text-blue-800 flex items-center gap-2 mb-2 italic">
+           <div className={`mt-12 p-6 rounded-2xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-100'}`}>
+             <h4 className={`font-bold flex items-center gap-2 mb-2 italic ${isDarkMode ? 'text-blue-400' : 'text-blue-800'}`}>
                <Info className="w-4 h-4" /> AWS Recommendation
              </h4>
-             <p className="text-sm text-blue-700">
+             <p className={`text-sm ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>
                For the real exam AWS recommends consistently scoring at least 80% in practice tests before taking the exam.
              </p>
            </div>

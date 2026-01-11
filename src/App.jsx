@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import FULL_POOL, { QUESTION_BANK } from './data/questions';
 import { formatTime as formatTimeUtil, calculateScore as calculateScoreUtil, shuffle as shuffleUtil } from './utils/helpers';
 import Header from './components/Header';
@@ -6,8 +6,10 @@ import Menu from './components/Menu';
 import QuestionPanel from './components/QuestionPanel';
 import Sidebar from './components/Sidebar';
 import Result from './components/Result';
+import { ThemeContext } from './context/ThemeContext';
 
 const App = () => {
+  const { isDarkMode } = useContext(ThemeContext);
   const [view, setView] = useState('menu'); // 'menu', 'quiz'
   const [quizConfig, setQuizConfig] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -148,10 +150,10 @@ const App = () => {
       <Header onBack={() => setView('menu')} quizConfig={quizConfig} timeLeft={timeLeft} formatTime={formatTimeUtil} quizFinished={quizFinished} finishQuiz={requestFinish} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <div className="flex-1 md:w-3/5 overflow-y-auto p-6 md:p-12 bg-white">
+        <div className={`flex-1 md:w-3/5 overflow-y-auto p-6 md:p-12 ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
           {!quizFinished ? (
             <div>
-              <div className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full inline-block">
+              <div className={`mb-4 text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'} px-3 py-1 rounded-full inline-block`}>
                 Question {currentIndex + 1} of {questions.length}
               </div>
               <QuestionPanel
@@ -171,7 +173,7 @@ const App = () => {
           )}
         </div>
 
-        <div className="md:w-2/5 border-t md:border-t-0 md:border-l border-slate-200 bg-slate-50 p-6 md:p-12 overflow-y-auto">
+        <div className={`md:w-2/5 border-t md:border-t-0 md:border-l ${isDarkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-slate-50'} p-6 md:p-12 overflow-y-auto`}>
             <Sidebar
             currentQ={currentQ}
             userAns={userAns}
