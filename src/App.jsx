@@ -8,6 +8,19 @@ import Sidebar from './components/Sidebar';
 import Result from './components/Result';
 import { ThemeContext } from './context/ThemeContext';
 
+const shuffleQuestionOptions = (question) => {
+  const optionsWithIndices = question.options.map((opt, idx) => ({ option: opt, originalIdx: idx }));
+  const shuffled = shuffleUtil(optionsWithIndices);
+  const newOptions = shuffled.map(item => item.option);
+  const newCorrect = question.correct.map(correctIdx => shuffled.findIndex(item => item.originalIdx === correctIdx));
+  
+  return {
+    ...question,
+    options: newOptions,
+    correct: newCorrect
+  };
+};
+
 const App = () => {
   const { isDarkMode } = useContext(ThemeContext);
   const [view, setView] = useState('menu'); // 'menu', 'quiz'
@@ -37,6 +50,8 @@ const App = () => {
       const d4 = shuffleUtil(FULL_POOL.filter(q => q.domain === 4)).slice(0, 8);
       selected = shuffleUtil([...d1, ...d2, ...d3, ...d4]);
     }
+
+    selected = selected.map(q => shuffleQuestionOptions(q));
 
     setQuestions(selected);
     // Diagnostic: if no questions found, notify user

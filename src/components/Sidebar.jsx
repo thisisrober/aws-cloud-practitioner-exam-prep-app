@@ -209,18 +209,35 @@ const Sidebar = ({
           <div className={`mt-auto pt-8 border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}>
             <div className="flex gap-4 mb-8">
               {(() => {
-                // find previous unanswered index (closest earlier index with no answer)
                 let prevUnanswered = null;
-                for (let i = currentIndex - 1; i >= 0; i--) {
-                  const ans = userAnswers[i] || [];
-                  if (!ans || ans.length === 0) {
-                    prevUnanswered = i;
-                    break;
+                let nextUnanswered = null;
+
+                // For domain mode: find next/prev unanswered questions
+                if (quizConfig?.type === 'domain') {
+                  // find previous unanswered index
+                  for (let i = currentIndex - 1; i >= 0; i--) {
+                    const ans = userAnswers[i] || [];
+                    if (!ans || ans.length === 0) {
+                      prevUnanswered = i;
+                      break;
+                    }
                   }
+                  // find next unanswered index
+                  for (let i = currentIndex + 1; i < questions.length; i++) {
+                    const ans = userAnswers[i] || [];
+                    if (!ans || ans.length === 0) {
+                      nextUnanswered = i;
+                      break;
+                    }
+                  }
+                } else {
+                  // For exam mode: allow normal navigation through all questions
+                  prevUnanswered = currentIndex > 0 ? currentIndex - 1 : null;
+                  nextUnanswered = currentIndex < questions.length - 1 ? currentIndex + 1 : null;
                 }
 
                 const prevDisabled = prevUnanswered === null;
-                const nextDisabled = currentIndex === questions.length - 1;
+                const nextDisabled = nextUnanswered === null;
 
                 return (
                   <>
@@ -233,7 +250,7 @@ const Sidebar = ({
                     </button>
                     <button
                       disabled={nextDisabled}
-                      onClick={() => { if (!nextDisabled) { setCurrentIndex(currentIndex + 1); setShowFeedback(false); } }}
+                      onClick={() => { if (!nextDisabled) { setCurrentIndex(nextUnanswered); setShowFeedback(false); } }}
                       className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold disabled:opacity-50 transition-all ${isDarkMode ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
                     >
                       Next <ChevronRight className="w-5 h-5" />
