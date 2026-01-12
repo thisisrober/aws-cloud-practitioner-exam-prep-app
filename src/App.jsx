@@ -31,6 +31,7 @@ const App = () => {
   const [flags, setFlags] = useState({});
   const [notes, setNotes] = useState({});
   const [excludedAnswers, setExcludedAnswers] = useState({});
+  const [scoredQuestionIndices, setScoredQuestionIndices] = useState(null); // For full exams: which 50 of 65 questions count
   const [timeLeft, setTimeLeft] = useState(5400); // 90 min
   const [quizFinished, setQuizFinished] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -59,6 +60,8 @@ const App = () => {
 
   const startQuiz = (type, domainId = null) => {
     let selected = [];
+    let scoredIndices = null;
+    
     if (type === 'domain') {
       // For domain tests, use only the curated QUESTION_BANK to avoid generated practice items
       selected = shuffleUtil(QUESTION_BANK.filter(q => q.domain === domainId)).slice(0, 30);
@@ -68,11 +71,18 @@ const App = () => {
       const d3 = shuffleUtil(FULL_POOL.filter(q => q.domain === 3)).slice(0, 21);
       const d4 = shuffleUtil(FULL_POOL.filter(q => q.domain === 4)).slice(0, 8);
       selected = shuffleUtil([...d1, ...d2, ...d3, ...d4]);
+      
+      // For full exams (65 questions): randomly select 50 to count, 15 are experimental
+      if (selected.length === 65) {
+        const allIndices = Array.from({ length: 65 }, (_, i) => i);
+        scoredIndices = shuffleUtil(allIndices).slice(0, 50).sort((a, b) => a - b);
+      }
     }
 
     selected = selected.map(q => shuffleQuestionOptions(q));
 
     setQuestions(selected);
+    setScoredQuestionIndices(scoredIndices);
     // Diagnostic: if no questions found, notify user
     if (!selected || selected.length === 0) {
       // eslint-disable-next-line no-alert
@@ -157,7 +167,7 @@ const App = () => {
     }
   };
 
-  const score = quizFinished ? calculateScoreUtil(questions, userAnswers) : null;
+  const score = quizFinished ? calculateScoreUtil(questions, userAnswers, scoredQuestionIndices) : null;
 
   if (view === 'menu') {
     return <Menu startQuiz={startQuizWrapper} lastPerformance={lastPerformance} />;

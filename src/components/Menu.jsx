@@ -169,7 +169,7 @@ const Menu = ({ startQuiz, lastPerformance }) => {
                     </svg>
                   </div>
                 )}
-                <div className={`${d.color} text-white p-4 rounded-xl mr-5 group-hover:scale-110 transition-transform flex-shrink-0`}>
+                <div className={`${d.color} text-white p-4 rounded-xl mr-5 domain-icon-box flex-shrink-0`}>
                   {d.icon}
                 </div>
                 <div>

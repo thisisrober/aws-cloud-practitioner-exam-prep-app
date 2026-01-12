@@ -19,18 +19,32 @@ export const shuffle = (arr) => {
   return a;
 };
 
-// calculateScore expects (questions, userAnswers)
-export const calculateScore = (questions, userAnswers) => {
-  const scoredQuestions = questions.slice(0, 50);
+// calculateScore expects (questions, userAnswers, scoredQuestionIndices)
+// For full exams (65 questions): scoredQuestionIndices contains 50 random indices that count
+// For domain tests (30 questions): scoredQuestionIndices is null, all 30 count
+export const calculateScore = (questions, userAnswers, scoredQuestionIndices = null) => {
   let correctCount = 0;
 
-  scoredQuestions.forEach((q, idx) => {
-    const ans = userAnswers[idx] || [];
-    if (JSON.stringify(ans.slice().sort()) === JSON.stringify(q.correct.slice().sort())) {
-      correctCount++;
-    }
-  });
-
-  const scaledScore = Math.round(100 + (correctCount / 50) * 900);
-  return scaledScore;
+  if (scoredQuestionIndices) {
+    // Full exam: only count questions in the scoredQuestionIndices array
+    scoredQuestionIndices.forEach((idx) => {
+      const q = questions[idx];
+      const ans = userAnswers[idx] || [];
+      if (JSON.stringify(ans.slice().sort()) === JSON.stringify(q.correct.slice().sort())) {
+        correctCount++;
+      }
+    });
+    const scaledScore = Math.round(100 + (correctCount / 50) * 900);
+    return scaledScore;
+  } else {
+    // Domain test: all questions count
+    questions.forEach((q, idx) => {
+      const ans = userAnswers[idx] || [];
+      if (JSON.stringify(ans.slice().sort()) === JSON.stringify(q.correct.slice().sort())) {
+        correctCount++;
+      }
+    });
+    const scaledScore = Math.round(100 + (correctCount / questions.length) * 900);
+    return scaledScore;
+  }
 };
